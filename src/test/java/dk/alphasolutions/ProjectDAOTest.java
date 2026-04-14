@@ -51,7 +51,7 @@ class ProjectDAOTest {
     }
 
     @Test
-    void delete_fjerner ProjektFraDatabasen() {
+    void delete_fjernerProjektFraDatabasen() {
         projectDAO.delete(2);
 
         Project deleted = projectDAO.getById(2);
