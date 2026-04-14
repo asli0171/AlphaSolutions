@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Projekter – Alpha Solutions</title>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+
+<nav>
+    <a href="/projects" class="nav-brand">Alpha Solutions</a>
+    <div class="nav-links">
+        <a href="/projects" class="active">Projekter</a>
+        <a href="/users" th:if="${session.user.role == 'ADMIN'}">Brugere</a>
+        <a href="/logout">Log ud</a>
+    </div>
+</nav>
+
+<div class="container">
+
+    <div class="section-header">
+        <h1 class="page-title">Projekter</h1>
+    </div>
+
+    <div class="table-wrap">
+        <table>
+            <thead>
+            <tr>
+                <th>Navn</th>
+                <th>Kunde</th>
+                <th>Startdato</th>
+                <th>Slutdato</th>
+                <th>Status</th>
+                <th>Handlinger</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="project : ${projects}">
+                <td style="font-weight:bold" th:text="${project.name}"></td>
+                <td th:text="${project.customer}"></td>
+                <td th:text="${project.startDate}"></td>
+                <td th:text="${project.endDate}"></td>
+                <td>
+                        <span th:if="${session.user.role != 'ADMIN'}"
+                              class="badge badge-active"
+                              th:text="${project.status}"></span>
+                    <form th:if="${session.user.role == 'ADMIN'}"
+                          th:action="@{'/projects/update-status/' + ${project.id}}"
+                          method="post"
+                          style="display:inline">
+                        <select name="status"
+                                class="form-input"
+                                style="width:auto;padding:4px 8px;font-size:12px"
+                                onchange="this.form.submit()">
+                            <option value="Ikke begyndt"
+                                    th:selected="${project.status == 'Ikke begyndt'}">
+                                Ikke begyndt
+                            </option>
+                            <option value="Igang"
+                                    th:selected="${project.status == 'Igang'}">
+                                Igang
+                            </option>
+                            <option value="Færdig"
+                                    th:selected="${project.status == 'Færdig'}">
+                                Færdig
+                            </option>
+                        </select>
+                    </form>
+                </td>
+                <td>
+                    <a th:href="@{'/tasks/' + ${project.id}}"
+                       class="btn btn-ghost"
+                       style="margin-right:6px">Opgaver</a>
+                    <a th:href="@{'/projects/delete/' + ${project.id}}"
+                       class="btn btn-danger"
+                       th:if="${session.user.role == 'ADMIN'}">Slet</a>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div th:if="${session.user.role == 'ADMIN'}">
+        <hr class="divider">
+        <div class="card">
+            <div class="card-title">Opret nyt projekt</div>
+            <form action="/projects" method="post">
+                <label>Projektnavn</label>
+                <input type="text" name="name" placeholder="Indtast projektnavn">
+
+                <label>Kunde</label>
+                <input type="text" name="customer" placeholder="Kundenavn">
+
+                <div class="form-row">
+                    <div>
+                        <label>Startdato</label>
+                        <input type="date" name="startDate">
+                    </div>
+                    <div>
+                        <label>Slutdato</label>
+                        <input type="date" name="endDate">
+                    </div>
+                </div>
+
+                <label>Status</label>
+                <select name="status" class="form-input">
+                    <option value="Ikke begyndt">Ikke begyndt</option>
+                    <option value="Igang">Igang</option>
+                    <option value="Færdig">Færdig</option>
+                </select>
+
+                <button type="submit" class="btn btn-primary" style="margin-top:14px">
+                    Gem projekt
+                </button>
+            </form>
+        </div>
+    </div>
+
+</div>
+
+</body>
+</html>

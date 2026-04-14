@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Opgaver – Alpha Solutions</title>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+
+<nav>
+    <a href="/projects" class="nav-brand">Alpha Solutions</a>
+    <div class="nav-links">
+        <a href="/projects">Projekter</a>
+        <a href="/users" th:if="${session.user.role == 'ADMIN'}">Brugere</a>
+        <a href="/logout">Log ud</a>
+    </div>
+</nav>
+
+<div class="container">
+
+    <div class="breadcrumb">Projekter / <strong>Opgaver</strong></div>
+
+    <div class="section-header">
+        <h1 class="page-title">Opgaver</h1>
+        <span class="badge-admin-tag" th:if="${session.user.role == 'ADMIN'}">Admin</span>
+    </div>
+
+    <div class="table-wrap">
+        <table>
+            <thead>
+            <tr>
+                <th>Opgave</th>
+                <th>Beskrivelse</th>
+                <th>Registrer tid</th>
+                <th th:if="${session.user.role == 'ADMIN'}">Slet</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="task : ${tasks}">
+                <td style="font-weight:bold" th:text="${task.name}"></td>
+                <td th:text="${task.description}" style="color:#555048"></td>
+                <td>
+                    <form th:action="@{/time}" method="post">
+                        <input type="hidden" name="taskId" th:value="${task.id}">
+                        <input type="hidden" name="userId" th:value="${session.user.id}">
+                        <div class="time-row">
+                            <input type="number" name="hours" step="0.5"
+                                   min="0" placeholder="Timer">
+                            <input type="date" name="date">
+                            <button type="submit" class="btn btn-primary"
+                                    style="padding:6px 12px;white-space:nowrap">
+                                Registrer
+                            </button>
+                        </div>
+                    </form>
+                </td>
+                <td th:if="${session.user.role == 'ADMIN'}">
+                    <a th:href="@{'/tasks/delete/' + ${task.id} + '/' + ${projectId}}"
+                       class="btn btn-danger">Slet</a>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div class="card" style="margin-top:12px;display:flex;align-items:center;gap:12px">
+        <span style="font-size:14px;color:#555048">Samlet tidsforbrug for projektet:</span>
+        <span style="font-size:18px;font-weight:bold;color:#1B2A4A"
+              th:text="${totalHours} + ' timer'"></span>
+    </div>
+
+    <div th:if="${session.user.role == 'ADMIN'}">
+        <hr class="divider">
+        <div class="card">
+            <div class="card-title">Opret ny opgave</div>
+            <form action="/tasks" method="post">
+                <input type="hidden" name="projectId" th:value="${projectId}">
+
+                <label>Opgavenavn</label>
+                <input type="text" name="name" placeholder="Indtast opgavenavn">
+
+                <label>Beskrivelse</label>
+                <input type="text" name="description" placeholder="Kort beskrivelse">
+
+                <button type="submit" class="btn btn-primary" style="margin-top:14px">
+                    Gem opgave
+                </button>
+            </form>
+        </div>
+    </div>
+
+</div>
+
+</body>
+</html>

@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Login – Alpha Solutions</title>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+
+<nav>
+    <span class="nav-brand">Alpha Solutions</span>
+</nav>
+
+<div class="login-page">
+    <div class="login-card">
+        <div class="login-logo">Alpha Solutions</div>
+
+        <div class="alert-error" th:if="${error}" th:text="${error}"></div>
+
+        <form action="/login" method="post">
+            <label>Brugernavn</label>
+            <input type="text" name="username" placeholder="Indtast brugernavn">
+
+            <label>Adgangskode</label>
+            <input type="password" name="password" placeholder="••••••••">
+
+            <button type="submit" class="btn btn-primary btn-full" style="margin-top:14px">Log ind</button>
+        </form>
+    </div>
+</div>
+
+</body>
+</html>

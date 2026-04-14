@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Brugere – Alpha Solutions</title>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+
+<nav>
+    <a href="/projects" class="nav-brand">Alpha Solutions</a>
+    <div class="nav-links">
+        <a href="/projects">Projekter</a>
+        <a href="/users" class="active">Brugere</a>
+        <a href="/logout">Log ud</a>
+    </div>
+</nav>
+
+<div class="container">
+
+    <div class="section-header">
+        <h1 class="page-title">Brugerstyring</h1>
+        <span class="badge-admin-tag">Kun admin</span>
+    </div>
+
+    <div class="table-wrap">
+        <table>
+            <thead>
+            <tr>
+                <th>Brugernavn</th>
+                <th>Rolle</th>
+                <th>Handlinger</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="user : ${users}">
+                <td style="font-weight:bold" th:text="${user.username}"></td>
+                <td>
+                    <span class="badge badge-admin" th:if="${user.role == 'ADMIN'}">ADMIN</span>
+                    <span class="badge badge-user" th:if="${user.role == 'USER'}">USER</span>
+                </td>
+                <td>
+                    <a th:href="@{'/users/delete/' + ${user.id}}" class="btn btn-danger">Slet</a>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <hr class="divider">
+
+    <div class="card">
+        <div class="card-title">Opret ny bruger</div>
+        <form action="/users" method="post">
+            <label>Brugernavn</label>
+            <input type="text" name="username" placeholder="Indtast brugernavn">
+
+            <label>Adgangskode</label>
+            <input type="password" name="password" placeholder="••••••••">
+
+            <label>Rolle</label>
+            <select name="role">
+                <option value="USER">USER</option>
+                <option value="ADMIN">ADMIN</option>
+            </select>
+
+            <button type="submit" class="btn btn-primary" style="margin-top:14px">Opret bruger</button>
+        </form>
+    </div>
+
+</div>
+
+</body>
+</html>
