@@ -18,12 +18,13 @@ public class UserDAO {
     }
 
     public void create(User u) {
-        String sql = "INSERT INTO user (username, password, role) VALUES (?, ?, ?)";
+        String sql = "INSERT INTO users (username, password, role, competence) VALUES (?, ?, ?, ?)";
         try (Connection conn = dataSource.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setString(1, u.getUsername());
             stmt.setString(2, u.getPassword());
             stmt.setString(3, u.getRole());
+            stmt.setString(4, u.getCompetence());
             stmt.executeUpdate();
         } catch (SQLException e) {
             e.printStackTrace();
@@ -31,7 +32,7 @@ public class UserDAO {
     }
 
     public User findByUsername(String username) {
-        String sql = "SELECT * FROM user WHERE username=?";
+        String sql = "SELECT * FROM users WHERE username=?";
         try (Connection conn = dataSource.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setString(1, username);
@@ -41,7 +42,29 @@ public class UserDAO {
                         rs.getInt("id"),
                         rs.getString("username"),
                         rs.getString("password"),
-                        rs.getString("role")
+                        rs.getString("role"),
+                        rs.getString("competence")
+                );
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    public User getById(int id) {
+        String sql = "SELECT * FROM users WHERE id=?";
+        try (Connection conn = dataSource.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setInt(1, id);
+            ResultSet rs = stmt.executeQuery();
+            if (rs.next()) {
+                return new User(
+                        rs.getInt("id"),
+                        rs.getString("username"),
+                        rs.getString("password"),
+                        rs.getString("role"),
+                        rs.getString("competence")
                 );
             }
         } catch (SQLException e) {
@@ -52,7 +75,7 @@ public class UserDAO {
 
     public List<User> getAll() {
         List<User> list = new ArrayList<>();
-        String sql = "SELECT * FROM user";
+        String sql = "SELECT * FROM users";
         try (Connection conn = dataSource.getConnection();
              Statement stmt = conn.createStatement();
              ResultSet rs = stmt.executeQuery(sql)) {
@@ -61,7 +84,8 @@ public class UserDAO {
                         rs.getInt("id"),
                         rs.getString("username"),
                         rs.getString("password"),
-                        rs.getString("role")
+                        rs.getString("role"),
+                        rs.getString("competence")
                 ));
             }
         } catch (SQLException e) {
@@ -71,13 +95,14 @@ public class UserDAO {
     }
 
     public void update(User u) {
-        String sql = "UPDATE user SET username=?, password=?, role=? WHERE id=?";
+        String sql = "UPDATE users SET username=?, password=?, role=?, competence=? WHERE id=?";
         try (Connection conn = dataSource.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setString(1, u.getUsername());
             stmt.setString(2, u.getPassword());
             stmt.setString(3, u.getRole());
-            stmt.setInt(4, u.getId());
+            stmt.setString(4, u.getCompetence());
+            stmt.setInt(5, u.getId());
             stmt.executeUpdate();
         } catch (SQLException e) {
             e.printStackTrace();
@@ -85,7 +110,7 @@ public class UserDAO {
     }
 
     public void delete(int id) {
-        String sql = "DELETE FROM user WHERE id=?";
+        String sql = "DELETE FROM users WHERE id=?";
         try (Connection conn = dataSource.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setInt(1, id);

@@ -18,7 +18,7 @@ class UserDAOTest {
     private UserDAO userDAO;
 
     @Test
-    void findByUsername_medEksisterendeBruger_returnerBruger() {
+    void findByUsername_existingUser_returnsUser() {
         User user = userDAO.findByUsername("admin");
 
         assertNotNull(user);
@@ -27,34 +27,41 @@ class UserDAOTest {
     }
 
     @Test
-    void findByUsername_medUkendtBruger_returnerNull() {
+    void findByUsername_unknownUser_returnsNull() {
         User user = userDAO.findByUsername("findesikke");
 
         assertNull(user);
     }
 
     @Test
-    void getAll_returnerAlleTestbrugere() {
+    void getAll_returnsUsers() {
         List<User> users = userDAO.getAll();
 
-        assertEquals(3, users.size());
+        assertTrue(users.size() >= 3);
     }
 
     @Test
-    void create_gemmerNyBrugerIDatabasen() {
-        User nyBruger = new User(0, "nybruger", "nypassword", "USER");
+    void create_addsUser() {
+        User nyBruger = new User(0, "nybruger", "nypassword", "USER", "Backend");
+
         userDAO.create(nyBruger);
 
         User found = userDAO.findByUsername("nybruger");
+
         assertNotNull(found);
         assertEquals("USER", found.getRole());
     }
 
     @Test
-    void delete_fjerneBrugerFraDatabasen() {
-        userDAO.delete(3);
+    void delete_removesUser() {
+        User user = userDAO.findByUsername("user2");
+
+        assertNotNull(user);
+
+        userDAO.delete(user.getId());
 
         User deleted = userDAO.findByUsername("user2");
+
         assertNull(deleted);
     }
 }

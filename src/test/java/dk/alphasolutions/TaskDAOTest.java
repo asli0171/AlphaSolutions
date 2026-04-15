@@ -44,7 +44,7 @@ class TaskDAOTest {
 
     @Test
     void create_gemmerNyOpgaveIDatabasen() {
-        Task nyTask = new Task(0, 1, "Ny Opgave", "Ny beskrivelse");
+        Task nyTask = new Task(0, 1, "Ny Opgave", "Ny beskrivelse", 0, null, null);
         taskDAO.create(nyTask);
 
         List<Task> tasks = taskDAO.getByProjectId(1);

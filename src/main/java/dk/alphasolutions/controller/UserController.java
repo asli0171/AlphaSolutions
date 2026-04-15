@@ -29,13 +29,6 @@ public class UserController {
         return "users";
     }
 
-    @GetMapping("/users/new")
-    public String createForm(HttpSession session) {
-        if (!SecurityUtil.isAdmin(session)) {
-            return "redirect:/projects";
-        }
-        return "create-user";
-    }
 
     @PostMapping("/users")
     public String createUser(@ModelAttribute User user, HttpSession session) {

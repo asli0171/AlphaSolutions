@@ -25,7 +25,7 @@ class UserServiceTest {
 
     @Test
     void login_medKorrekteOplysninger_returnerBruger() {
-        User mockUser = new User(1, "admin", "adminpassword", "ADMIN");
+        User mockUser = new User(1, "admin", "adminpassword", "ADMIN", "Backend");
         when(userDAO.findByUsername("admin")).thenReturn(mockUser);
 
         User result = userService.login("admin", "adminpassword");
@@ -36,7 +36,7 @@ class UserServiceTest {
 
     @Test
     void login_medForkertAdgangskode_kasterValidationException() {
-        User mockUser = new User(1, "admin", "adminpassword", "ADMIN");
+        User mockUser = new User(1, "admin", "adminpassword", "ADMIN", "Backend");
         when(userDAO.findByUsername("admin")).thenReturn(mockUser);
 
         assertThrows(ValidationException.class, () ->
@@ -62,7 +62,7 @@ class UserServiceTest {
 
     @Test
     void createUser_medTomtBrugernavn_kasterValidationException() {
-        User user = new User(0, "", "password", "USER");
+        User user = new User(0, "", "password", "USER", null);
 
         assertThrows(ValidationException.class, () ->
                 userService.createUser(user)
@@ -71,7 +71,7 @@ class UserServiceTest {
 
     @Test
     void createUser_medTomAdgangskode_kasterValidationException() {
-        User user = new User(0, "nybruger", "", "USER");
+        User user = new User(0, "nybruger", "", "USER", null);
 
         assertThrows(ValidationException.class, () ->
                 userService.createUser(user)
@@ -88,8 +88,8 @@ class UserServiceTest {
     @Test
     void getAllUsers_returnerListe() {
         when(userDAO.getAll()).thenReturn(List.of(
-                new User(1, "admin", "adminpassword", "ADMIN"),
-                new User(2, "user1", "password1", "USER")
+                new User(1, "admin", "adminpassword", "ADMIN", "Backend"),
+                new User(2, "user1", "password1", "USER", "Frontend")
         ));
 
         List<User> users = userService.getAllUsers();

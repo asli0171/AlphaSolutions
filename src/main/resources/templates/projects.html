@@ -68,7 +68,7 @@
                     </form>
                 </td>
                 <td>
-                    <a th:href="@{'/tasks/' + ${project.id}}"
+                    <a th:href="@{'/projects/' + ${project.id} + '/tasks'}"
                        class="btn btn-ghost"
                        style="margin-right:6px">Opgaver</a>
                     <a th:href="@{'/projects/delete/' + ${project.id}}"

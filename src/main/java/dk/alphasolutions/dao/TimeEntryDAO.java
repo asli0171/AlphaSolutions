@@ -18,13 +18,14 @@ public class TimeEntryDAO {
     }
 
     public void create(TimeEntry t) {
-        String sql = "INSERT INTO time_entry (task_id, user_id, hours, date) VALUES (?, ?, ?, ?)";
+        String sql = "INSERT INTO time_entry (task_id, user_id, hours, date, comment) VALUES (?, ?, ?, ?, ?)";
         try (Connection conn = dataSource.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setInt(1, t.getTaskId());
             stmt.setInt(2, t.getUserId());
             stmt.setDouble(3, t.getHours());
             stmt.setString(4, t.getDate());
+            stmt.setString(5, t.getComment());
             stmt.executeUpdate();
         } catch (SQLException e) {
             e.printStackTrace();
@@ -44,7 +45,8 @@ public class TimeEntryDAO {
                         rs.getInt("task_id"),
                         rs.getInt("user_id"),
                         rs.getDouble("hours"),
-                        rs.getString("date")
+                        rs.getString("date"),
+                        rs.getString("comment")
                 ));
             }
         } catch (SQLException e) {

@@ -1,18 +1,24 @@
 package dk.alphasolutions.service;
 
 import dk.alphasolutions.dao.TimeEntryDAO;
+import dk.alphasolutions.dao.UserDAO;
 import dk.alphasolutions.model.TimeEntry;
+import dk.alphasolutions.model.User;
 import org.springframework.stereotype.Service;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Service
 public class TimeEntryService {
 
     private final TimeEntryDAO timeEntryDAO;
+    private final UserDAO userDAO;
 
-    public TimeEntryService(TimeEntryDAO timeEntryDAO) {
+    public TimeEntryService(TimeEntryDAO timeEntryDAO, UserDAO userDAO) {
         this.timeEntryDAO = timeEntryDAO;
+        this.userDAO = userDAO;
     }
 
     public void addTimeEntry(TimeEntry entry) {
@@ -46,5 +52,19 @@ public class TimeEntryService {
             total += calculateTotalHours(taskId);
         }
         return total;
+    }
+
+    public Map<String, Double> calculateHoursByCompetence(List<Integer> taskIds) {
+        Map<String, Double> hoursByCompetence = new HashMap<>();
+        for (int taskId : taskIds) {
+            List<TimeEntry> entries = timeEntryDAO.getByTaskId(taskId);
+            for (TimeEntry entry : entries) {
+                User user = userDAO.getById(entry.getUserId());
+                String competence = (user != null && user.getCompetence() != null)
+                        ? user.getCompetence() : "Ukendt";
+                hoursByCompetence.merge(competence, entry.getHours(), Double::sum);
+            }
+        }
+        return hoursByCompetence;
     }
 }

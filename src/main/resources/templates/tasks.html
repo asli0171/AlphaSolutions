@@ -4,6 +4,46 @@
     <title>Opgaver – Alpha Solutions</title>
     <meta charset="UTF-8">
     <link rel="stylesheet" th:href="@{/css/style.css}">
+    <style>
+        .gantt-container {
+            overflow-x: auto;
+            margin-top: 16px;
+        }
+        .gantt-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        .gantt-table th, .gantt-table td {
+            padding: 8px 12px;
+            border: 1px solid #eee;
+            font-size: 13px;
+        }
+        .gantt-table th {
+            background: #1B2A4A;
+            color: white;
+            font-weight: 600;
+        }
+        .gantt-bar-cell {
+            min-width: 400px;
+            position: relative;
+            background: #f5f5f5;
+        }
+        .gantt-bar {
+            height: 20px;
+            background: #1B2A4A;
+            border-radius: 4px;
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            min-width: 4px;
+        }
+        .gantt-bar-done {
+            background: #4CAF50;
+        }
+        .gantt-bar-late {
+            background: #e53935;
+        }
+    </style>
 </head>
 <body>
 
@@ -11,18 +51,20 @@
     <a href="/projects" class="nav-brand">Alpha Solutions</a>
     <div class="nav-links">
         <a href="/projects">Projekter</a>
-        <a href="/users" th:if="${session.user.role == 'ADMIN'}">Brugere</a>
+        <a href="/users" th:if="${isAdmin}">Brugere</a>
         <a href="/logout">Log ud</a>
     </div>
 </nav>
 
 <div class="container">
 
-    <div class="breadcrumb">Projekter / <strong>Opgaver</strong></div>
+    <div class="breadcrumb">
+        <a href="/projects">Projekter</a> / <strong th:text="${project.name}"></strong>
+    </div>
 
     <div class="section-header">
-        <h1 class="page-title">Opgaver</h1>
-        <span class="badge-admin-tag" th:if="${session.user.role == 'ADMIN'}">Admin</span>
+        <h1 class="page-title" th:text="${project.name}"></h1>
+        <span class="badge-admin-tag" th:if="${isAdmin}">Admin</span>
     </div>
 
     <div class="table-wrap">
@@ -31,22 +73,26 @@
             <tr>
                 <th>Opgave</th>
                 <th>Beskrivelse</th>
+                <th>Estimerede timer</th>
+                <th>Startdato</th>
+                <th>Slutdato</th>
                 <th>Registrer tid</th>
-                <th th:if="${session.user.role == 'ADMIN'}">Slet</th>
+                <th th:if="${isAdmin}">Slet</th>
             </tr>
             </thead>
             <tbody>
             <tr th:each="task : ${tasks}">
                 <td style="font-weight:bold" th:text="${task.name}"></td>
                 <td th:text="${task.description}" style="color:#555048"></td>
+                <td th:text="${task.estimatedHours} + ' t'"></td>
+                <td th:text="${task.startDate}"></td>
+                <td th:text="${task.endDate}"></td>
                 <td>
-                    <form th:action="@{/time}" method="post">
-                        <input type="hidden" name="taskId" th:value="${task.id}">
-                        <input type="hidden" name="userId" th:value="${session.user.id}">
+                    <form th:action="@{'/projects/' + ${project.id} + '/tasks/' + ${task.id} + '/time'}" method="post">
                         <div class="time-row">
-                            <input type="number" name="hours" step="0.5"
-                                   min="0" placeholder="Timer">
+                            <input type="number" name="hours" step="0.5" min="0" placeholder="Timer">
                             <input type="date" name="date">
+                            <input type="text" name="comment" placeholder="Kommentar">
                             <button type="submit" class="btn btn-primary"
                                     style="padding:6px 12px;white-space:nowrap">
                                 Registrer
@@ -54,8 +100,8 @@
                         </div>
                     </form>
                 </td>
-                <td th:if="${session.user.role == 'ADMIN'}">
-                    <a th:href="@{'/tasks/delete/' + ${task.id} + '/' + ${projectId}}"
+                <td th:if="${isAdmin}">
+                    <a th:href="@{'/projects/' + ${project.id} + '/tasks/delete/' + ${task.id}}"
                        class="btn btn-danger">Slet</a>
                 </td>
             </tr>
@@ -63,24 +109,105 @@
         </table>
     </div>
 
-    <div class="card" style="margin-top:12px;display:flex;align-items:center;gap:12px">
-        <span style="font-size:14px;color:#555048">Samlet tidsforbrug for projektet:</span>
-        <span style="font-size:18px;font-weight:bold;color:#1B2A4A"
-              th:text="${totalHours} + ' timer'"></span>
+    <div class="card" style="margin-top:16px">
+        <div class="card-title">Projektkalkulation</div>
+        <div style="display:flex;flex-direction:column;gap:8px;font-size:14px">
+            <div>
+                <span style="color:#555048">Estimerede timer i alt:</span>
+                <strong th:text="${totalEstimatedHours} + ' timer'"></strong>
+            </div>
+            <div>
+                <span style="color:#555048">Brugte timer i alt:</span>
+                <strong th:text="${totalUsedHours} + ' timer'"></strong>
+            </div>
+            <div>
+                <span style="color:#555048">Resterende timer:</span>
+                <strong th:text="${remainingHours} + ' timer'"></strong>
+            </div>
+            <div>
+                <span style="color:#555048">Deadline:</span>
+                <strong th:text="${project.endDate}"></strong>
+            </div>
+            <div style="margin-top:8px;padding-top:8px;border-top:1px solid #eee">
+                <span style="color:#1B2A4A;font-weight:bold">Timer der skal arbejdes per arbejdsdag:</span>
+                <span style="font-size:20px;font-weight:bold;color:#1B2A4A;margin-left:8px"
+                      th:text="${hoursPerWorkday} + ' t/dag'"></span>
+            </div>
+        </div>
     </div>
 
-    <div th:if="${session.user.role == 'ADMIN'}">
+    <div class="card" style="margin-top:16px">
+        <div class="card-title">Kompetenceoversigt</div>
+        <table>
+            <thead>
+            <tr>
+                <th>Kompetence</th>
+                <th>Timer brugt</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="entry : ${hoursByCompetence}">
+                <td th:text="${entry.key}"></td>
+                <td th:text="${entry.value} + ' t'"></td>
+            </tr>
+            <tr th:if="${#maps.size(hoursByCompetence) == 0}">
+                <td colspan="2" style="color:#555048;font-style:italic">Ingen tidsregistreringer endnu</td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div class="card gantt-container" style="margin-top:16px">
+        <div class="card-title">Gantt-diagram</div>
+        <table class="gantt-table">
+            <thead>
+            <tr>
+                <th style="width:200px">Opgave</th>
+                <th style="width:100px">Start</th>
+                <th style="width:100px">Slut</th>
+                <th>Tidslinje</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="task : ${tasks}" th:if="${task.startDate != null and task.endDate != null}">
+                <td th:text="${task.name}"></td>
+                <td th:text="${task.startDate}"></td>
+                <td th:text="${task.endDate}"></td>
+                <td class="gantt-bar-cell">
+                    <div class="gantt-bar"
+                         th:style="'left:' + ${task.ganttLeft} + '%;width:' + ${task.ganttWidth} + '%'">
+                    </div>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div th:if="${isAdmin}">
         <hr class="divider">
         <div class="card">
             <div class="card-title">Opret ny opgave</div>
-            <form action="/tasks" method="post">
-                <input type="hidden" name="projectId" th:value="${projectId}">
+            <form th:action="@{'/projects/' + ${project.id} + '/tasks'}" method="post">
 
                 <label>Opgavenavn</label>
                 <input type="text" name="name" placeholder="Indtast opgavenavn">
 
                 <label>Beskrivelse</label>
                 <input type="text" name="description" placeholder="Kort beskrivelse">
+
+                <label>Estimerede timer</label>
+                <input type="number" name="estimatedHours" step="0.5" min="0" placeholder="F.eks. 10">
+
+                <div class="form-row">
+                    <div>
+                        <label>Startdato</label>
+                        <input type="date" name="startDate">
+                    </div>
+                    <div>
+                        <label>Slutdato</label>
+                        <input type="date" name="endDate">
+                    </div>
+                </div>
 
                 <button type="submit" class="btn btn-primary" style="margin-top:14px">
                     Gem opgave

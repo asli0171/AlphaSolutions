@@ -66,26 +66,4 @@ public class TaskController {
         taskService.deleteTask(id);
         return "redirect:/tasks/" + projectId;
     }
-
-    @GetMapping("/tasks/edit/{id}")
-    public String editTask(@PathVariable int id,
-                           HttpSession session,
-                           Model model) {
-        if (!SecurityUtil.isAdmin(session)) {
-            return "redirect:/projects";
-        }
-        Task task = taskService.getTaskById(id);
-        model.addAttribute("task", task);
-        return "edit-task";
-    }
-
-    @PostMapping("/tasks/update")
-    public String updateTask(@ModelAttribute Task task,
-                             HttpSession session) {
-        if (!SecurityUtil.isAdmin(session)) {
-            return "redirect:/projects";
-        }
-        taskService.updateTask(task);
-        return "redirect:/tasks/" + task.getProjectId();
-    }
 }
