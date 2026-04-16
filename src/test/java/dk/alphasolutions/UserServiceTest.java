@@ -96,4 +96,11 @@ class UserServiceTest {
 
         assertEquals(2, users.size());
     }
+
+    @Test
+    void updateCompetence_kaldUserDAO() {
+        userService.updateCompetence(1, "Frontend");
+
+        verify(userDAO, times(1)).updateCompetence(1, "Frontend");
+    }
 }

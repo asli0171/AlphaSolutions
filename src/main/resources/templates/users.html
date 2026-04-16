@@ -40,7 +40,18 @@
                     <span class="badge badge-admin" th:if="${user.role == 'ADMIN'}">ADMIN</span>
                     <span class="badge badge-user" th:if="${user.role == 'USER'}">USER</span>
                 </td>
-                <td th:text="${user.competence != null ? user.competence : '-'}"></td>
+                <td>
+                    <form th:action="@{'/users/update-competence/' + ${user.id}}" method="post">
+                        <select name="competence" onchange="this.form.submit()"
+                                style="font-size:13px;padding:4px 8px;border:1px solid #ccc;border-radius:4px">
+                            <option value="Backend"        th:selected="${user.competence == 'Backend'}">Backend</option>
+                            <option value="Frontend"       th:selected="${user.competence == 'Frontend'}">Frontend</option>
+                            <option value="Design"         th:selected="${user.competence == 'Design'}">Design</option>
+                            <option value="Projektledelse" th:selected="${user.competence == 'Projektledelse'}">Projektledelse</option>
+                            <option value="Test"           th:selected="${user.competence == 'Test'}">Test</option>
+                        </select>
+                    </form>
+                </td>
                 <td>
                     <a th:href="@{'/users/delete/' + ${user.id}}" class="btn btn-danger">Slet</a>
                 </td>

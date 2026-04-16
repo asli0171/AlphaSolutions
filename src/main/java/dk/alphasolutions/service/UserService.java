@@ -18,14 +18,14 @@ public class UserService {
 
     public User login(String username, String password) {
         if (username == null || username.trim().isEmpty()) {
-            throw new ValidationException("Username required");
-        }
-        if (password == null || password.trim().isEmpty()) {
-            throw new ValidationException("Password required");
+            throw new ValidationException("Username is required");
         }
         User user = userDAO.findByUsername(username);
-        if (user == null || !user.getPassword().equals(password)) {
-            throw new ValidationException("Invalid login");
+        if (user == null) {
+            throw new ValidationException("User not found");
+        }
+        if (!user.getPassword().equals(password)) {
+            throw new ValidationException("Invalid password");
         }
         return user;
     }
@@ -36,12 +36,16 @@ public class UserService {
 
     public void createUser(User user) {
         if (user.getUsername() == null || user.getUsername().trim().isEmpty()) {
-            throw new ValidationException("Username required");
+            throw new ValidationException("Username is required");
         }
         if (user.getPassword() == null || user.getPassword().trim().isEmpty()) {
-            throw new ValidationException("Password required");
+            throw new ValidationException("Password is required");
         }
         userDAO.create(user);
+    }
+
+    public void updateCompetence(int id, String competence) {
+        userDAO.updateCompetence(id, competence);
     }
 
     public void deleteUser(int id) {

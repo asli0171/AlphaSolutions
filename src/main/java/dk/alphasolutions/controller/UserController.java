@@ -8,8 +8,6 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
-
 @Controller
 public class UserController {
 
@@ -24,11 +22,9 @@ public class UserController {
         if (!SecurityUtil.isAdmin(session)) {
             return "redirect:/projects";
         }
-        List<User> users = userService.getAllUsers();
-        model.addAttribute("users", users);
+        model.addAttribute("users", userService.getAllUsers());
         return "users";
     }
-
 
     @PostMapping("/users")
     public String createUser(@ModelAttribute User user, HttpSession session) {
@@ -36,6 +32,17 @@ public class UserController {
             return "redirect:/projects";
         }
         userService.createUser(user);
+        return "redirect:/users";
+    }
+
+    @PostMapping("/users/update-competence/{id}")
+    public String updateCompetence(@PathVariable int id,
+                                   @RequestParam String competence,
+                                   HttpSession session) {
+        if (!SecurityUtil.isAdmin(session)) {
+            return "redirect:/users";
+        }
+        userService.updateCompetence(id, competence);
         return "redirect:/users";
     }
 

@@ -94,6 +94,18 @@ public class UserDAO {
         return list;
     }
 
+    public void updateCompetence(int id, String competence) {
+        String sql = "UPDATE users SET competence=? WHERE id=?";
+        try (Connection conn = dataSource.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setString(1, competence);
+            stmt.setInt(2, id);
+            stmt.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
     public void update(User u) {
         String sql = "UPDATE users SET username=?, password=?, role=?, competence=? WHERE id=?";
         try (Connection conn = dataSource.getConnection();

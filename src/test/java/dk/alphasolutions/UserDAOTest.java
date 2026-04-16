@@ -64,4 +64,18 @@ class UserDAOTest {
 
         assertNull(deleted);
     }
+
+    @Test
+    void updateCompetence_opdatererKompetence() {
+        User user = userDAO.findByUsername("user1");
+
+        assertNotNull(user);
+
+        userDAO.updateCompetence(user.getId(), "Frontend");
+
+        User updated = userDAO.findByUsername("user1");
+
+        assertNotNull(updated);
+        assertEquals("Frontend", updated.getCompetence());
+    }
 }

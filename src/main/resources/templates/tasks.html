@@ -37,11 +37,14 @@
             transform: translateY(-50%);
             min-width: 4px;
         }
-        .gantt-bar-done {
-            background: #4CAF50;
+        .cards-row {
+            display: flex;
+            gap: 16px;
+            margin-top: 16px;
         }
-        .gantt-bar-late {
-            background: #e53935;
+        .cards-row .card {
+            flex: 1;
+            margin-top: 0;
         }
     </style>
 </head>
@@ -90,9 +93,9 @@
                 <td>
                     <form th:action="@{'/projects/' + ${project.id} + '/tasks/' + ${task.id} + '/time'}" method="post">
                         <div class="time-row">
-                            <input type="number" name="hours" step="0.5" min="0" placeholder="Timer">
-                            <input type="date" name="date">
-                            <input type="text" name="comment" placeholder="Kommentar">
+                            <input type="number" name="hours" step="0.5" min="0" placeholder="Timer" required>
+                            <input type="date" name="date" required>
+                            <input type="text" name="comment" placeholder="Kommentar" required>
                             <button type="submit" class="btn btn-primary"
                                     style="padding:6px 12px;white-space:nowrap">
                                 Registrer
@@ -109,52 +112,54 @@
         </table>
     </div>
 
-    <div class="card" style="margin-top:16px">
-        <div class="card-title">Projektkalkulation</div>
-        <div style="display:flex;flex-direction:column;gap:8px;font-size:14px">
-            <div>
-                <span style="color:#555048">Estimerede timer i alt:</span>
-                <strong th:text="${totalEstimatedHours} + ' timer'"></strong>
-            </div>
-            <div>
-                <span style="color:#555048">Brugte timer i alt:</span>
-                <strong th:text="${totalUsedHours} + ' timer'"></strong>
-            </div>
-            <div>
-                <span style="color:#555048">Resterende timer:</span>
-                <strong th:text="${remainingHours} + ' timer'"></strong>
-            </div>
-            <div>
-                <span style="color:#555048">Deadline:</span>
-                <strong th:text="${project.endDate}"></strong>
-            </div>
-            <div style="margin-top:8px;padding-top:8px;border-top:1px solid #eee">
-                <span style="color:#1B2A4A;font-weight:bold">Timer der skal arbejdes per arbejdsdag:</span>
-                <span style="font-size:20px;font-weight:bold;color:#1B2A4A;margin-left:8px"
-                      th:text="${hoursPerWorkday} + ' t/dag'"></span>
+    <div class="cards-row">
+        <div class="card">
+            <div class="card-title">Projektkalkulation</div>
+            <div style="display:flex;flex-direction:column;gap:8px;font-size:14px">
+                <div>
+                    <span style="color:#555048">Estimerede timer i alt:</span>
+                    <strong th:text="${totalEstimatedHours} + ' timer'"></strong>
+                </div>
+                <div>
+                    <span style="color:#555048">Brugte timer i alt:</span>
+                    <strong th:text="${totalUsedHours} + ' timer'"></strong>
+                </div>
+                <div>
+                    <span style="color:#555048">Resterende timer:</span>
+                    <strong th:text="${remainingHours} + ' timer'"></strong>
+                </div>
+                <div>
+                    <span style="color:#555048">Deadline:</span>
+                    <strong th:text="${project.endDate}"></strong>
+                </div>
+                <div style="margin-top:8px;padding-top:8px;border-top:1px solid #eee">
+                    <span style="color:#1B2A4A;font-weight:bold">Timer per arbejdsdag:</span>
+                    <span style="font-size:20px;font-weight:bold;color:#1B2A4A;margin-left:8px"
+                          th:text="${hoursPerWorkday} + ' t/dag'"></span>
+                </div>
             </div>
         </div>
-    </div>
 
-    <div class="card" style="margin-top:16px">
-        <div class="card-title">Kompetenceoversigt</div>
-        <table>
-            <thead>
-            <tr>
-                <th>Kompetence</th>
-                <th>Timer brugt</th>
-            </tr>
-            </thead>
-            <tbody>
-            <tr th:each="entry : ${hoursByCompetence}">
-                <td th:text="${entry.key}"></td>
-                <td th:text="${entry.value} + ' t'"></td>
-            </tr>
-            <tr th:if="${#maps.size(hoursByCompetence) == 0}">
-                <td colspan="2" style="color:#555048;font-style:italic">Ingen tidsregistreringer endnu</td>
-            </tr>
-            </tbody>
-        </table>
+        <div class="card">
+            <div class="card-title">Kompetenceoversigt</div>
+            <table>
+                <thead>
+                <tr>
+                    <th>Kompetence</th>
+                    <th>Timer brugt</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="entry : ${hoursByCompetence}">
+                    <td th:text="${entry.key}"></td>
+                    <td th:text="${entry.value} + ' t'"></td>
+                </tr>
+                <tr th:if="${#maps.size(hoursByCompetence) == 0}">
+                    <td colspan="2" style="color:#555048;font-style:italic">Ingen tidsregistreringer endnu</td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
     </div>
 
     <div class="card gantt-container" style="margin-top:16px">
@@ -190,7 +195,7 @@
             <form th:action="@{'/projects/' + ${project.id} + '/tasks'}" method="post">
 
                 <label>Opgavenavn</label>
-                <input type="text" name="name" placeholder="Indtast opgavenavn">
+                <input type="text" name="name" placeholder="Indtast opgavenavn" required>
 
                 <label>Beskrivelse</label>
                 <input type="text" name="description" placeholder="Kort beskrivelse">

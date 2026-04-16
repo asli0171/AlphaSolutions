@@ -43,4 +43,9 @@ public class AuthController {
         session.invalidate();
         return "redirect:/login";
     }
+
+    @GetMapping("/")
+    public String index() {
+        return "redirect:/login";
+    }
 }
