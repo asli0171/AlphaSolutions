@@ -85,7 +85,7 @@ Tests bruger automatisk H2 in-memory database via `@ActiveProfiles("test")`
 
 ## Kodestil
 
-- Dansk navngivning på variable og metoder er acceptabelt
+- Engelsk navngivning på variable og metoder
 - Brug `ValidationException` til alle valideringsfejl i service-laget
 - Tjek altid session med `SecurityUtil.isLoggedIn()` i starten af alle controller-metoder
 - Admin-funktioner tjekkes med `SecurityUtil.isAdmin()`
