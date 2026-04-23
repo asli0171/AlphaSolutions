@@ -6,17 +6,19 @@ rollebaseret adgangskontrol.
 
 ## Link til applikation
 
+Applikationen kører lokalt på http://localhost:8080. Azure-deployment afventer genoprettelse af Student-abonnement.
+
 
 ## Tekniske forudsætninger
 
 - Java 17 eller nyere
 - Maven 3.x
-- MySQL 8.x
+- MySQL 
 - IntelliJ IDEA 2024.3.2
 
 ## Sådan starter du applikationen lokalt
 
-1. Klon repositoryet:
+1. Klon repositoriet:
 ```bash
    git clone https://github.com/[dit-brugernavn]/AlphaSolutions.git
 ```
@@ -69,9 +71,9 @@ via GitHub Actions. Pipeline konfigurationen findes i
 - Java 17
 - Spring Boot 4.0.5
 - Thymeleaf 3.1.3
-- MySQL 8.x
+- MySQL
 - JDBC via Spring Boot Starter JDBC 4.0.5
 - H2 (til tests)
 - Mockito (til unit tests)
 - GitHub Actions (CI/CD)
-- Azure App Service (deployment)
+- Azure App Service (deployment konfigureret – afventer adgang)
